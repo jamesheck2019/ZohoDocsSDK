@@ -1,5 +1,4 @@
 # ZohoDocsSDK
-Zoho.Docs SDK for .NET
 
 `Download:`[https://github.com/loudKode/ZohoDocsSDK/releases](https://github.com/loudKode/ZohoDocsSDK/releases)<br>
 `NuGet:`
@@ -44,42 +43,58 @@ Zoho.Docs SDK for .NET
 * RemoveFileTag
 
 # Code simple:
-**get token**
 ```vb
-Dim tkn = Await ZohoDocsSDK.GetToken.GenerateAuthToken("user", "pass")
-```
-**set client**
-```vb
-Dim Clnt As ZohoDocsSDK.IClient = New ZohoDocsSDK.ZClient(tkn.token)
-```
-**set client with proxy**
-```vb
-Dim m_proxy = New ZohoDocsSDK.ProxyConfig With {.SetProxy = True, .ProxyIP = "172.0.0.0", .ProxyPort = 80, .ProxyUsername = "usr", .ProxyPassword = "pas"}
-Dim Clnt As ZohoDocsSDK.IClient = New ZohoDocsSDK.ZClient(tkn.token,m_proxy)
-```
-**list root files/folders**
-```vb
-Dim RSLT = Await TOK.List(Nothing)
-For Each onz In RSLT.Files
-    DataGridView1.Rows.Add(onz.Name, onz.ID, onz.Extension, onz.IsLocked, onz.Type, onz.IsShared)
-Next
-Dim RSLT2 = Await TOK.ListAllFiles(ZohoDocsSDK.utilities.Category.videos, 0, 50)
-For Each onz In RSLT2.Files
-    DataGridView1.Rows.Add(onz.Name, onz.ID, onz.Extension, onz.ParentFolderID, onz.Type, onz.IsShared)
-Next
-```
-**upload local file (without progress tracking)**
-```vb.net
-Dim UploadCancellationToken As New Threading.CancellationTokenSource()
-Dim RSLT = TOK.Upload("C:\m_118.png", "m_118.png", ZohoDocsSDK.ZClient.UploadTypes.FilePath, Nothing, Nothing, nothing, UploadCancellationToken.Token)
-```
-**upload local file with progress tracking**
-```vb.net
-Dim UploadCancellationToken As New Threading.CancellationTokenSource()
-Dim progress_ReportCls As New Progress(Of ZohoDocsSDK.ReportStatus)(Sub(ReportClass As ZohoDocsSDK.ReportStatus)
-                         Label1.Text = String.Format("{0}/{1}", (ReportClass.BytesTransferred), (ReportClass.TotalBytes))
-                         ProgressBar1.Value = CInt(ReportClass.ProgressPercentage)
-                         Label2.Text = CStr(ReportClass.TextStatus)
-                         End Sub)
-Dim RSLT = TOK.Upload("C:\m_118.png", "m_118.png", ZohoDocsSDK.ZClient.UploadTypes.FilePath, Nothing, Nothing, progress_ReportCls, UploadCancellationToken.Token)
+        'first get auth token (one time only)
+        ''API Mode
+        Dim tokn_APIMode = ZohoDocsSDK.GetToken.GetAuthTokenFromBrowser
+        'OR
+        ''Browser Mode
+        Dim tokn_BrowserMode = Await ZohoDocsSDK.GetToken.GenerateAuthToken("your_email", "your_password")
+        ''set proxy and connection options
+        Dim con As New ZohoDocsSDK.ConnectionSettings With {.CloseConnection = True, .TimeOut = TimeSpan.FromMinutes(30), .Proxy = New ZohoDocsSDK.ProxyConfig With {.SetProxy = True, .ProxyIP = "127.0.0.1", .ProxyPort = 8888, .ProxyUsername = "user", .ProxyPassword = "pass"}}
+        ''set api client
+        Dim CLNT As ZohoDocsSDK.IClient = New ZohoDocsSDK.ZClient("xxxxxxxx")
+
+        ''general
+        Await CLNT.ListAllFiles("folder_id", CategoryEnum._ALL_, 50, 0)
+        Await CLNT.ListAllFolders("folder_id", 50, 0)
+        Await CLNT.ListFilesAndFolders("folder_id", 50, 0)
+        Await CLNT.ListPublicFolder(New Uri("https://www.zoho.com/folder/xxxxxx"))
+        Await CLNT.ListRoot()
+        Await CLNT.ListTags()
+        CLNT.RootID()
+        Dim cts As New Threading.CancellationTokenSource()
+        Dim _ReportCls As New Progress(Of ZohoDocsSDK.ReportStatus)(Sub(ReportClass As ZohoDocsSDK.ReportStatus)
+                                                                        Console.WriteLine(String.Format("{0}/{1}", (ReportClass.BytesTransferred), (ReportClass.TotalBytes)))
+                                                                        Console.WriteLine(CInt(ReportClass.ProgressPercentage))
+                                                                        Console.WriteLine(ReportClass.TextStatus)
+                                                                    End Sub)
+        Await CLNT.DownloadPublicFile("https://www.zoho.com/file/xxxxxx", "c:\\", "fle.zip", _ReportCls, cts.Token)
+
+        ''single
+        '' [D_] = dir
+        '' [F_] = file
+        '' [FD_] = file & dir
+        Await CLNT.Item("folder_id").D_Copy("folder_id")
+        Await CLNT.Item("folder_id").D_Create("new folder")
+        Await CLNT.Item("folder_id").D_List()
+        Await CLNT.Item("folder_id").D_Upload("c:\\file.mp4", UploadTypes.FilePath, "file.mp4", Nothing, _ReportCls, cts.Token)
+        Await CLNT.Item("file_id OR folder_id").FD_Delete
+        Await CLNT.Item("file_id OR folder_id").FD_Move("folder_id")
+        Await CLNT.Item("file_id OR folder_id").FD_Rename("new folder name")
+        Await CLNT.Item("file_id OR folder_id").FD_Share(PermissionEnum.readonly, "12345", Nothing)
+        Await CLNT.Item("file_id OR folder_id").FD_SharesMetadata
+        Await CLNT.Item("file_id OR folder_id").FD_Trash
+        Await CLNT.Item("file_id OR folder_id").FD_UnShare
+        Await CLNT.Item("file_id").F_AddTags(New List(Of String) From {"tag1", "tag2"})
+        Await CLNT.Item("file_id").F_Copy("folder_id")
+        Await CLNT.Item("file_id").F_Download("c:\\", "file.zip", Nothing, _ReportCls, cts.Token)
+        Await CLNT.Item("file_id").F_DownloadAsStream(_ReportCls, Nothing)
+        Await CLNT.Item("file_id").F_RemoveTags(New List(Of String) From {"tag1"})
+        Await CLNT.Item("file_id").F_RevisionMetadata(RevisionTypeEnum.shared)
+
+        ''multiple
+        Await CLNT.Items(New List(Of String) From {"file_id", "folder_id"}).FD_Move("folder_id")
+        Await CLNT.Items(New List(Of String) From {"folder_id", "folder_id"}).D_Copy("folder_id")
+        Await CLNT.Items(New List(Of String) From {"file_id", "file_id"}).F_Copy("folder_id")
 ```
