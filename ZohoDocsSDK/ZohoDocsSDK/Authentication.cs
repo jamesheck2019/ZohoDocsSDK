@@ -40,7 +40,7 @@ namespace ZohoDocsSDK
                     }
                     else if (tokn[2].ToString().Trim() == "FALSE")
                     {
-                        throw ZohoDocsSDK.ExceptionCls.CreateException(tokn[1].Replace("RESULT", ""), (int)response.StatusCode);
+                        throw new ZohoDocsException(tokn[1].Replace("RESULT", ""), (int)response.StatusCode);
                     }
                     else { return null; }
                 }

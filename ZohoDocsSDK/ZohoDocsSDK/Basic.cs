@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using ZohoDocsSDK;
 
 namespace ZohoDocsSDK
@@ -78,13 +80,20 @@ namespace ZohoDocsSDK
             public pUri(string ApiAction) : base(APIbase + ApiAction ) { }
         }
 
-
         public static  Newtonsoft.Json.Linq.JObject Jobj(this string response)
         {
             return Newtonsoft.Json.Linq.JObject.Parse(response);
         }
 
-
+        public static async Task<HttpResponseMessage> RequestAsync(HttpMethod method, string url, HttpContent content)
+        {
+            using (HtpClient localHtpClient = new HtpClient(new HCHandler()))
+            {
+                HttpRequestMessage requ = new HttpRequestMessage(method, new Uri(APIbase + url)) { Content = content };
+                HttpResponseMessage response = await localHtpClient.SendAsync(requ, HttpCompletionOption.ResponseContentRead).ConfigureAwait(false);
+                return response;
+            }
+        }
 
 
 
