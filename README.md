@@ -77,7 +77,7 @@
 ![codemap](https://i.postimg.cc/sxWfpyrm/zd-codemap.png)
 
 # Code simple:
-```vb
+```csharp
 //'first get auth token (one time only)
 // API Mode
 var tokn_APIMode = ZohoDocsSDK.Authentication.GetAuthTokenFromBrowser();
@@ -131,16 +131,16 @@ await CLNT.Folder("folder_id").Create("new folder");
 await CLNT.Folder("folder_id").List();
 await CLNT.Folder("folder_id").List2(60,0);
 await CLNT.Folder("folder_id").Upload("c:\\file.mp4", UploadTypes.FilePath, "file.mp4", null, _ReportCls, cts.Token);
-await CLNT.Folder("file_id OR folder_id").Delete();
-await CLNT.Folder("file_id OR folder_id").Move("folder_id");
-await CLNT.Folder("file_id OR folder_id").Rename("new folder name");
-await CLNT.Folder("file_id OR folder_id").Share(PermissionEnum.@readonly, "12345");
-await CLNT.Folder("file_id OR folder_id").SharedDetails();
-await CLNT.Folder("file_id OR folder_id").Trash();
-await CLNT.Folder("file_id OR folder_id").UnShare();
-await CLNT.Folder("file_id").ListSubFilesRecursively();
-await CLNT.Folder("file_id").ListSubFoldersRecursively();
-await CLNT.Folder("file_id").Copy("folder_id");
+await CLNT.Folder("folder_id").Delete();
+await CLNT.Folder("folder_id").Move("folder_id");
+await CLNT.Folder("folder_id").Rename("new folder name");
+await CLNT.Folder("folder_id").Share(PermissionEnum.@readonly, "12345");
+await CLNT.Folder("folder_id").SharedDetails();
+await CLNT.Folder("folder_id").Trash();
+await CLNT.Folder("folder_id").UnShare();
+await CLNT.Folder("folder_id").ListSubFilesRecursively();
+await CLNT.Folder("folder_id").ListSubFoldersRecursively();
+await CLNT.Folder("folder_id").Copy("folder_id");
 
 // multiple
 await CLNT.Files(new string[] { "file_id", "file_id" }).Move("folder_id");
