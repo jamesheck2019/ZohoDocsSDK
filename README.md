@@ -74,7 +74,7 @@
 
 
 # CodeMap:
-![codemap](https://i.postimg.cc/sxWfpyrm/zd-codemap.png)
+![codemap](https://i.postimg.cc/xjWxYWZN/zd-Codemap.png)
 
 # Code simple:
 ```csharp
